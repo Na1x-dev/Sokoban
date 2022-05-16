@@ -13,9 +13,11 @@ import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
 
 import java.io.IOException;
+import java.util.Objects;
 
 public class Level3Controller {
-    boolean isMoveButtonPressed = false;
+    Stage primaryStage;
+    Parent root;
     Engine engine;
 
     @FXML
@@ -32,36 +34,17 @@ public class Level3Controller {
 
     @FXML
     void move(KeyEvent event) {
-        if (!isMoveButtonPressed) {
-            switch (event.getCode()) {
-                case W -> engine.moveUp();
-                case S -> engine.moveDown();
-                case A -> engine.moveLeft();
-                case D -> engine.moveRight();
-            }
-            isMoveButtonPressed = true;
-        }
-        if (engine.checkPlaces()) {
-            statusLabel.setText("Win");
-            nextLevelButton.setDisable(false);
-        }
+        engine.move(event);
     }
 
     @FXML
     void stop(KeyEvent event) {
-        isMoveButtonPressed = false;
+        engine.stop();
     }
 
     @FXML
-    void restart(ActionEvent event) {
-        Stage primaryStage = new Stage();
-        primaryStage.setTitle("Sokoban");
-        Parent root = null;
-        try {
-            root = FXMLLoader.load(getClass().getResource("level3.fxml"));
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+    void restart(ActionEvent event) throws IOException {
+        root = FXMLLoader.load(Objects.requireNonNull(getClass().getResource("level3.fxml")));
         Scene second = new Scene(root);
         primaryStage.setScene(second);
         primaryStage.show();
@@ -69,15 +52,8 @@ public class Level3Controller {
     }
 
     @FXML
-    void goToMenu(ActionEvent event) {
-        Stage primaryStage = new Stage();
-        primaryStage.setTitle("Sokoban");
-        Parent root = null;
-        try {
-            root = FXMLLoader.load(getClass().getResource("menu.fxml"));
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+    void goToMenu(ActionEvent event) throws IOException {
+        root = FXMLLoader.load(Objects.requireNonNull(getClass().getResource("menu.fxml")));
         Scene second = new Scene(root);
         primaryStage.setScene(second);
         primaryStage.show();
@@ -91,7 +67,9 @@ public class Level3Controller {
 
     @FXML
     void initialize() {
-        engine = new Engine(gameField, player, statusLabel);
+        engine = new Engine(gameField, player, statusLabel, nextLevelButton);
+        primaryStage = new Stage();
+        primaryStage.setTitle("Sokoban");
     }
 
 }
